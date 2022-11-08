@@ -82,7 +82,20 @@ extension LoginVC: LoginCellDelegate {
         }
         
         if title == "Apple Music" {
-            //implement
+            let status = await MusicAuthorization.request()
+            
+            switch status {
+            case .authorized:
+                print("authorized")
+            case .notDetermined:
+                print("notDetermined")
+            case .denied:
+                print("denied")
+            case .restricted:
+                print("restricted")
+            @unknown default:
+                // handle notDetermined error
+                print("An error occurred... PANIC!!!")
         }
         
         if title == "YouTube" {
