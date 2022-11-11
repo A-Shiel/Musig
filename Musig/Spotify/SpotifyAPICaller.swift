@@ -15,9 +15,9 @@ final class SpotifyAPICaller {
 
     // MARK: - Search
 
-    public func search(with query: String, completion: @escaping (Result<[String], Error>) -> Void) {
+    public func search(with query: String, completion: @escaping (Result<[SearchResult], Error>) -> Void) {
         createRequest(
-            with: URL(string: Constants.baseAPIURL+"/search?limit=10&type=track&q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"),
+            with: URL(string: Constants.baseAPIURL+"/search?limit=5&type=track&q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"),
             type: .GET
         ) { request in
             print(request.url?.absoluteString ?? "none")
@@ -29,11 +29,16 @@ final class SpotifyAPICaller {
 
                 do {
                     // prints the json response. store it in an array and put data into a tableview
-                    let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-                    print(json)
+                    // let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    let result = try JSONDecoder().decode(SpotifySearchResultsResponse.self, from: data)
+                    var searchResults: [SearchResult] = []
+                    searchResults.append(contentsOf: result.tracks.items.compactMap({ SearchResult.spotify(model: $0) }))
+                    
+                    completion(.success(searchResults))
+                    print(result)
                 }
                 catch {
-                    print(error)
+                    print(error.localizedDescription)
                     completion(.failure(error))
                 }
             }

@@ -1,4 +1,5 @@
 import UIKit
+import MusicKit
 
 class LoginVC: UIViewController {
     
@@ -82,7 +83,21 @@ extension LoginVC: LoginCellDelegate {
         }
         
         if title == "Apple Music" {
-            //implement
+            Task {
+             let status = await MusicAuthorization.request()
+                switch status {
+                case .authorized:
+                    print("authorized")
+                case .notDetermined:
+                    print("notDetermined")
+                case .denied:
+                    print("denied")
+                case .restricted:
+                    print("restricted")
+                @unknown default:
+                    print("error")
+                }
+            }
         }
         
         if title == "YouTube" {
