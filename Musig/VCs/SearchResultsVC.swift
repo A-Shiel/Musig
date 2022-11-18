@@ -46,8 +46,16 @@ class SearchResultsVC: UIViewController {
             }
         })
         
+        let songs = results.filter({
+            switch $0 {
+            case .apple: return true
+            default: return false
+            }
+        })
+        
         self.sections = [
             SearchSection(title: "Spotify", results: tracks),
+            SearchSection(title: "Apple Music", results: songs)
         ]
         
         myTableView.reloadData()
@@ -65,15 +73,45 @@ extension SearchResultsVC: UITableViewDelegate, UITableViewDataSource {
         return sections[section].results.count
     }
     
+    // [Musig.Artist(id: "hgoahierag04eaiohgosahrogarghroaing, name: ...)
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let result = sections[indexPath.section].results[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         switch result {
         case .spotify(let model):
-            cell.textLabel?.text = "\(model.name) \(model.artists)"
+            cell.textLabel?.text = "\(model.name) - \(model.artists[0].name)"
+        case .apple(let model):
+            cell.textLabel?.text = "\(model.title) - \(model.artistName)"
         }
+        cell.selectionStyle = .none
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let result = sections[indexPath.section].results[indexPath.row]
+        let title = "Add to Playlist"
+        
+        switch result {
+            
+        case .spotify(let model):
+            let alert = UIAlertController(title: title, message: "Do you want to add \"\(model.name) - \(model.artists[0].name)\" to your playlist?", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler:  { action in
+                print(model.id)
+            }))
+            alert.addAction(UIAlertAction(title: "No", style: UIAlertAction.Style.cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+        case .apple(let model):
+            
+            let alert = UIAlertController(title: title, message: "Do you want to add \"\(model.title) - \(model.artistName)\" to your playlist?", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler:  { action in
+                print(model.url!)
+            }))
+            alert.addAction(UIAlertAction(title: "No", style: UIAlertAction.Style.cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
