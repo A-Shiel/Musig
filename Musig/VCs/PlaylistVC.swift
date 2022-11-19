@@ -4,8 +4,8 @@ import UIKit
 // implement tableview
 // save data within an array in playlist
 
-struct PlaylistArray {
-    static var array: [SearchResult] = []
+struct PlaylistArray: Codable {
+    static var array = [SearchResult]()
 }
 
 class PlaylistVC: UIViewController {
