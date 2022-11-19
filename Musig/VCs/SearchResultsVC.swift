@@ -2,11 +2,13 @@ import UIKit
 
 struct SearchSection {
     let title: String
+    // **************************************
     let results: [SearchResult]
 }
 
 class SearchResultsVC: UIViewController {
     
+    // **************************************
     private var sections: [SearchSection] = []
     
     var myTableView: UITableView!
@@ -18,12 +20,14 @@ class SearchResultsVC: UIViewController {
         view.addSubview(myTableView)
         myTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         myTableViewConstraints()
+        view.backgroundColor = .systemBackground
     }
     
     func configureMyTableView() {
         myTableView.delegate = self
         myTableView.dataSource = self
         myTableView.isHidden = true
+        myTableView.separatorColor = .clear
     }
     
     func myTableViewConstraints() {
@@ -98,6 +102,10 @@ extension SearchResultsVC: UITableViewDelegate, UITableViewDataSource {
         case .spotify(let model):
             let alert = UIAlertController(title: title, message: "Do you want to add \"\(model.name) - \(model.artists[0].name)\" to your playlist?", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler:  { action in
+                
+                // append to playlist array
+                PlaylistArray.array.append(result)
+                print(PlaylistArray.array.count)
                 print(model.id)
             }))
             alert.addAction(UIAlertAction(title: "No", style: UIAlertAction.Style.cancel, handler: nil))
@@ -107,6 +115,10 @@ extension SearchResultsVC: UITableViewDelegate, UITableViewDataSource {
             
             let alert = UIAlertController(title: title, message: "Do you want to add \"\(model.title) - \(model.artistName)\" to your playlist?", preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "Yes", style: UIAlertAction.Style.default, handler:  { action in
+                
+                // append to playlist array
+                PlaylistArray.array.append(result)
+                print(PlaylistArray.array.count)
                 print(model.url!)
             }))
             alert.addAction(UIAlertAction(title: "No", style: UIAlertAction.Style.cancel, handler: nil))

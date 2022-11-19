@@ -65,32 +65,3 @@ class SearchVC: UIViewController, UISearchBarDelegate {
         }
     }
 }
-
-//extension SearchVC {
-//    func search(for query: String) async throws -> MusicCatalogSearchResponse? {
-//            do {
-//                let types: [MusicCatalogSearchable.Type] = [Song.self]
-//                var request = MusicCatalogSearchRequest(term: query, types: types)
-//                request.limit = 5
-//
-//                let response = try await request.response()
-//
-//                return response
-//            } catch {
-//                print(error)
-//                return nil
-//            }
-//    }
-//
-//    func pussy() {
-//        let task = Task {
-//            do {
-//                let pussy2 = try await search(for: "pussy")
-//                print(pussy2)
-//            } catch {
-//                print(error)
-//            }
-//        }
-//    }
-//}
-//

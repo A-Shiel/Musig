@@ -1,9 +1,72 @@
 import UIKit
 
+// this is where we left off
+// implement tableview
+// save data within an array in playlist
+
+struct PlaylistArray {
+    static var array: [SearchResult] = []
+}
+
 class PlaylistVC: UIViewController {
+    
+    var myTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        myTableView = UITableView()
+        configureMyTableView()
+        view.addSubview(myTableView)
+        myTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        myTableViewContraints()
         view.backgroundColor = .systemBackground
+
+    }
+    
+    // reloads data everytime "playlist" is tapped
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        myTableView.reloadData()
+    }
+    
+    func configureMyTableView() {
+        myTableView.delegate = self
+        myTableView.dataSource = self
+        myTableView.separatorColor = .clear
+    }
+    
+    // move to struct or class reusable
+    func myTableViewContraints() {
+        myTableView.translatesAutoresizingMaskIntoConstraints = false
+        myTableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        myTableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        myTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        myTableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+}
+
+extension PlaylistVC: UITableViewDelegate, UITableViewDataSource  {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return PlaylistArray.array.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let result = PlaylistArray.
+        let result = PlaylistArray.array[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        
+        switch result {
+        case .spotify(let model):
+            cell.textLabel?.text = "\(model.name) - \(model.artists[0].name)"
+        case .apple(let model):
+            cell.textLabel?.text = "\(model.title) - \(model.artistName)"
+        }
+        cell.selectionStyle = .none
+        return cell
     }
 }
