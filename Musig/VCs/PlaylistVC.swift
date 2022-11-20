@@ -49,14 +49,14 @@ class PlaylistVC: UIViewController {
     }
 }
 
-extension PlaylistVC: UITableViewDelegate, UITableViewDataSource  {
+extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return PlaylistArray.array.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let result = PlaylistArray.
+        //        let result = PlaylistArray.
         let result = PlaylistArray.array[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
@@ -68,5 +68,19 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource  {
         }
         cell.selectionStyle = .none
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .delete
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            tableView.beginUpdates()
+            PlaylistArray.array.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .none)
+            
+            tableView.endUpdates()
+        }
     }
 }
