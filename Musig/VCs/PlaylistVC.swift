@@ -83,4 +83,30 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
             tableView.endUpdates()
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        let result = PlaylistArray.array[indexPath.row]
+        
+        let vc = PlayerVC()
+        
+        vc.hidesBottomBarWhenPushed = true
+        
+        switch result {
+        case .apple(let apple):
+//            PlayerPresenter.startPlayback(from: self, apple: apple)
+//            navigationController?.show(vc, sender: apple)
+//            navigationController?.pushViewController(vc, animated: true)
+            navigationController?.pushViewControllerFromTop(controller: vc)
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            vc.startPlayback(apple: apple)
+        case .spotify(let spotify):
+//            PlayerPresenter.startPlayback(from: self, spotify: spotify)
+            vc.startPlayback(spotify: spotify)
+            navigationController?.pushViewControllerFromTop(controller: vc)
+            navigationController?.setNavigationBarHidden(true, animated: false)
+//            navigationController?.show(vc, sender: spotify)
+        }
+
+    }
 }
