@@ -24,7 +24,6 @@
 		F696EA05290F584B00D2C698 /* LoginCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F696EA04290F584B00D2C698 /* LoginCell.swift */; };
 		F6CEAF472919B941003253EA /* SpotifyAuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CEAF462919B941003253EA /* SpotifyAuthResponse.swift */; };
 		F6CEAF492919C22A003253EA /* SpotifyAPICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CEAF482919C22A003253EA /* SpotifyAPICaller.swift */; };
-		F6D2D11C292AA30500B97CFB /* PlayerPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D2D11B292AA30500B97CFB /* PlayerPresenter.swift */; };
 		F6EE1E282919A5220038ECE6 /* SpotifyAuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE1E272919A5220038ECE6 /* SpotifyAuthVC.swift */; };
 		F6EE1E2B2919A8E70038ECE6 /* SpotifyAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE1E2A2919A8E70038ECE6 /* SpotifyAuthManager.swift */; };
 /* End PBXBuildFile section */
@@ -49,7 +48,6 @@
 		F696EA04290F584B00D2C698 /* LoginCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginCell.swift; sourceTree = "<group>"; };
 		F6CEAF462919B941003253EA /* SpotifyAuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthResponse.swift; sourceTree = "<group>"; };
 		F6CEAF482919C22A003253EA /* SpotifyAPICaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAPICaller.swift; sourceTree = "<group>"; };
-		F6D2D11B292AA30500B97CFB /* PlayerPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerPresenter.swift; sourceTree = "<group>"; };
 		F6EE1E272919A5220038ECE6 /* SpotifyAuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthVC.swift; sourceTree = "<group>"; };
 		F6EE1E2A2919A8E70038ECE6 /* SpotifyAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyAuthManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,7 +67,6 @@
 			isa = PBXGroup;
 			children = (
 				F69289FA291AFC7C0027AA96 /* SearchResult.swift */,
-				F6D2D11B292AA30500B97CFB /* PlayerPresenter.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -246,7 +243,6 @@
 				F687E5C42929B9AA00611327 /* PlayerVC.swift in Sources */,
 				F69289FB291AFC7C0027AA96 /* SearchResult.swift in Sources */,
 				F696E9FD290EFB6200D2C698 /* TabBarVC.swift in Sources */,
-				F6D2D11C292AA30500B97CFB /* PlayerPresenter.swift in Sources */,
 				F6EE1E2B2919A8E70038ECE6 /* SpotifyAuthManager.swift in Sources */,
 				F696E9FF290EFB8C00D2C698 /* PlaylistVC.swift in Sources */,
 				F6CEAF492919C22A003253EA /* SpotifyAPICaller.swift in Sources */,

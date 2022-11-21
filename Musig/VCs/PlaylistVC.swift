@@ -93,19 +93,21 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
         vc.hidesBottomBarWhenPushed = true
         
         switch result {
-        case .apple(let apple):
+            
+        case .spotify(let model):
+//            PlayerPresenter.startPlayback(from: self, spotify: spotify)
+//            navigationController?.show(vc, sender: spotify)
+            navigationController?.pushViewControllerFromTop(controller: vc)
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            vc.startPlayback(spotify: model)
+            
+        case .apple(let model):
 //            PlayerPresenter.startPlayback(from: self, apple: apple)
 //            navigationController?.show(vc, sender: apple)
 //            navigationController?.pushViewController(vc, animated: true)
             navigationController?.pushViewControllerFromTop(controller: vc)
             navigationController?.setNavigationBarHidden(true, animated: false)
-            vc.startPlayback(apple: apple)
-        case .spotify(let spotify):
-//            PlayerPresenter.startPlayback(from: self, spotify: spotify)
-            vc.startPlayback(spotify: spotify)
-            navigationController?.pushViewControllerFromTop(controller: vc)
-            navigationController?.setNavigationBarHidden(true, animated: false)
-//            navigationController?.show(vc, sender: spotify)
+            vc.startPlayback(apple: model)
         }
 
     }
