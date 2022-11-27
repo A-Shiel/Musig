@@ -47,78 +47,37 @@ final class SpotifyAPICaller {
         }
     }
     
-    public func startPlayback(with trackName: [String: [String]], completion: @escaping (Result<Int, Error>) -> Void) {
-        
-        let json = trackName
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        
-        createRequest(
-            //            with: URL(string: Constants.baseAPIURL+"/me/player/play=\(url)"),
-            with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=4a802bfefe174020009662aedcce4c15f0d3d0b7"),
-            httpBody: jsonData,
-            type: .PUT
+    // MARK: - DeviceID
+    public func getDeviceIDS(completion: @escaping (Result<[DeviceResult], Error>) -> Void) {
+        createRequest(with:
+                        URL(string: Constants.baseAPIURL+"/me/player/devices"),
+                      type: .GET
         ) { request in
-            print(request.url?.absoluteString ?? "none")
-            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
-//                guard let data = data, error == nil else {
-//                    completion(.failure(APIError.failedToGetData))
-//                    return
-//                }
-                guard let response = response as? HTTPURLResponse, error == nil else {
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
                     completion(.failure(APIError.failedToGetData))
                     return
                 }
-                
                 do {
-                    // cast reponse to int
-                    // store it
-                    let responseHTML = response.statusCode
-                    
-                    if responseHTML == 204 {
-                        print("RESPONSEHTML SPOTIFYAPICALLER YES 204")
-                        completion(.success(responseHTML))
-                    } else {
-                        print("RESPONSEHTML SPOTIFYAPICALLER NOT 204")
-                        completion(.failure(APIError.failedToGetData))
-                    }
-                }
-                
-//                let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
-//                if let responseJSON = responseJSON as? [String: Any] {
-//                    print("RESPONSE")
-//                    print(responseJSON)
-//                }
-//
-//                if let response = response as? HTTPURLResponse {
-//                    print("CALLER \(response.statusCode)")
-//                    spotifyHTTPError.spotifyHTTPResponse = response.statusCode
-//                }
-//
-//                completion(.success(request))
-//                print(completion(.success(request)))
-////
-//                if let error = error {
-//                    print("CALLER \(error)")
-//                }
+//                     let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+//                    print(json)
 
-//
-//                if let data = data, let dataString = String(data: data, encoding: .utf8) {
-//                    print("CALLER \(dataString)")
-//                }
+                    let result = try JSONDecoder().decode(SpotifyDeviceResultsResponse.self, from: data)
+                    print(UIDevice.current.identifierForVendor!.uuidString)
+                    var deviceResults: [DeviceResult] = []
+                    deviceResults.append(contentsOf: result.devices.compactMap({ DeviceResult.spotify(model: $0)
+                    }))
+                    print(result)
+                    completion(.success(deviceResults))
+                    
+                } catch {
+                    print(error.localizedDescription)
+                    completion(.failure(error))
+                }
             }
             task.resume()
         }
     }
-//    // MARK: - Start Playback
-//    public func startPlayback(with url: String) {
-//        print("Started Spotify Playback")
-//        createRequest(
-//            with: URL(string: Constants.baseAPIURL+"/me/player/play=\(url)"),
-//            type: .PUT
-//        )
-//    }
-    
-    // MARK: - DeviceID
     
 //    public func getDeviceIDS(completion: @escaping (Result<[DeviceResult], Error>) -> Void) {
 //        createRequest(
@@ -156,6 +115,144 @@ final class SpotifyAPICaller {
 //            }
 //            task.resume()
 //        }
+//    }
+    
+    // MARK: Spotify Playback
+    
+    public func startPlayback(with trackName: [String: [String]], completion: @escaping (Result<Int, Error>) -> Void) {
+        
+        let json = trackName
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        
+        createRequest(
+            with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=\(DeviceKey.key)"),
+            //            with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=4a802bfefe174020009662aedcce4c15f0d3d0b7"),
+            httpBody: jsonData,
+            type: .PUT
+        ) { request in
+            print(request.url?.absoluteString ?? "none")
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                //                guard let data = data, error == nil else {
+                //                    completion(.failure(APIError.failedToGetData))
+                //                    return
+                //                }
+                guard let response = response as? HTTPURLResponse, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                
+                do {
+                    // cast reponse to int
+                    // store it
+                    let responseHTML = response.statusCode
+                    print(responseHTML)
+                    
+                    if responseHTML == 204 {
+                        completion(.success(responseHTML))
+                    } else {
+                        completion(.failure(APIError.failedToGetData))
+                    }
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    public func resumePlayback(completion: @escaping (Result<Int, Error>) -> Void) {
+        createRequest(
+            with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=\(DeviceKey.key)"),
+            type: .PUT
+        ) { request in
+            print(request.url?.absoluteString ?? "none")
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                guard let response = response as? HTTPURLResponse, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                
+                do {
+                    // cast reponse to int
+                    // store it
+                    let responseHTML = response.statusCode
+                    print(responseHTML)
+                    
+                    if responseHTML == 204 {
+                        completion(.success(responseHTML))
+                    } else {
+                        completion(.failure(APIError.failedToGetData))
+                    }
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    public func pausePlayback(completion: @escaping (Result<Int, Error>) -> Void) {
+        
+        createRequest(
+            with: URL(string: Constants.baseAPIURL+"/me/player/pause?device_id=\(DeviceKey.key)"),
+            //            with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=4a802bfefe174020009662aedcce4c15f0d3d0b7"),
+            type: .PUT
+        ) { request in
+            print(request.url?.absoluteString ?? "none")
+            let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                //                guard let data = data, error == nil else {
+                //                    completion(.failure(APIError.failedToGetData))
+                //                    return
+                //                }
+                guard let response = response as? HTTPURLResponse, error == nil else {
+                    completion(.failure(APIError.failedToGetData))
+                    return
+                }
+                
+                do {
+                    // cast reponse to int
+                    // store it
+                    let responseHTML = response.statusCode
+                    
+                    if responseHTML == 204 {
+                        completion(.success(responseHTML))
+                    } else {
+                        completion(.failure(APIError.failedToGetData))
+                    }
+                }
+            }
+            task.resume()
+        }
+    }
+        
+        
+
+    
+//                let responseJSON = try? JSONSerialization.jsonObject(with: data, options: [])
+//                if let responseJSON = responseJSON as? [String: Any] {
+//                    print("RESPONSE")
+//                    print(responseJSON)
+//                }
+//
+//                if let response = response as? HTTPURLResponse {
+//                    print("CALLER \(response.statusCode)")
+//                    spotifyHTTPError.spotifyHTTPResponse = response.statusCode
+//                }
+//
+//                completion(.success(request))
+//                print(completion(.success(request)))
+////
+//                if let error = error {
+//                    print("CALLER \(error)")
+//                }
+
+//
+//                if let data = data, let dataString = String(data: data, encoding: .utf8) {
+//                    print("CALLER \(dataString)")
+//                }
+//    // MARK: - Start Playback
+//    public func startPlayback(with url: String) {
+//        print("Started Spotify Playback")
+//        createRequest(
+//            with: URL(string: Constants.baseAPIURL+"/me/player/play=\(url)"),
+//            type: .PUT
+//        )
 //    }
 
     // MARK: - Private

@@ -1,7 +1,9 @@
 import UIKit
 import MusicKit
+import SafariServices
 
-class LoginVC: UIViewController {
+
+class LoginVC: UIViewController, SFSafariViewControllerDelegate {
     
     var myTableView: UITableView!
     var list: [String] = ["Spotify", "Apple Music", "YouTube"]
@@ -80,6 +82,12 @@ extension LoginVC: LoginCellDelegate {
             }
             vc.hidesBottomBarWhenPushed = true
             navigationController?.pushViewController(vc, animated: true)
+//            spotifyAlertReturn()
+
+            // call method to loop through device list and grab name key from device
+            // if device.name == "iPhone"
+            // grab the associated value with the key device.ID
+            // store value into a variable
         }
         
         if title == "Apple Music" {
@@ -101,8 +109,18 @@ extension LoginVC: LoginCellDelegate {
         }
         
         if title == "YouTube" {
-            //implement
+            
         }
+    }
+    
+    func spotifyAlertReturn() {
+        let title = "Spotify Auth"
+        let alert = UIAlertController(title: title, message: "Please Reopen Musig After Spotify Launches", preferredStyle: UIAlertController.Style.alert)
+    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.cancel, handler: { action in
+        // call SPOTIFYAPICALLER getDeviceIDs()
+             UIApplication.shared.open(URL(string: "spotify:home")!, options: [:], completionHandler: nil)
+    }))
+    present(alert, animated: true, completion: nil)
     }
 }
 
@@ -117,6 +135,10 @@ extension LoginVC {
             present(alert, animated: true)
             return
         }
+        
+//        if success {
+//           linkDeviceIDS()
+//        }
     }
 }
 

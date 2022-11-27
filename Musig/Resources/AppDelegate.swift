@@ -4,7 +4,8 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window:UIWindow?
-    static let identifier = "playlist"
+    static let playlistIdentifier = "playlist"
+    static let deviceIdentifier = "device"
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
@@ -25,17 +26,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(PlaylistArray.array) {
             let defaults = UserDefaults.standard
-            defaults.set(encoded, forKey: AppDelegate.identifier)
+            defaults.set(encoded, forKey: AppDelegate.playlistIdentifier)
+        }
+        if let encoded = try? encoder.encode(DeviceKey.key) {
+            let defaults = UserDefaults.standard
+            defaults.set(encoded, forKey: AppDelegate.deviceIdentifier)
         }
     }
-    
+
     func appLaunched() {
         print("app launched")
         let defaults = UserDefaults.standard
-        if let savedPlaylist = defaults.object(forKey: AppDelegate.identifier) as? Data {
+        if let savedPlaylist = defaults.object(forKey: AppDelegate.playlistIdentifier) as? Data {
             let decoder = JSONDecoder()
             if let loadedPlaylist = try? decoder.decode([SearchResult].self, from: savedPlaylist) {
                 PlaylistArray.array = loadedPlaylist
+            }
+        }
+        if let savedDeviceKey = defaults.object(forKey: AppDelegate.deviceIdentifier) as? Data {
+            let decoder = JSONDecoder()
+            if let loadedDevice = try? decoder.decode(String.self, from: savedDeviceKey) {
+                DeviceKey.key = loadedDevice
             }
         }
     }

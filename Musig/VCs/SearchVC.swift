@@ -7,9 +7,6 @@ class SearchVC: UIViewController, UISearchBarDelegate {
     let searchController = UISearchController(searchResultsController: SearchResultsVC())
     var array: [SearchResult] = []
     
-    // felt cute, might delete later
-    var deviceArray: [DeviceResult] = []
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -38,7 +35,6 @@ class SearchVC: UIViewController, UISearchBarDelegate {
         }
         
         self.array = []
-        self.deviceArray = []
         
 //        Task {
 //            SpotifyAPICaller.shared.getDeviceIDS(completion:) { result in
@@ -80,6 +76,7 @@ class SearchVC: UIViewController, UISearchBarDelegate {
                     }
                 }
             }
+            
             resultsController.update(with: self.array)
         }
     }

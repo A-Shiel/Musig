@@ -48,11 +48,12 @@ class PlayerVC: UIViewController {
     //FIX BROKEN!
     // occurs when each song is played from PlaylistVC
     func startPlayback(spotify: AudioTrack) {
-        
         //            let url = "uris=[spotify:track:" + spotify.id + "]"
         //            let url = "4a802bfefe174020009662aedcce4c15f0d3d0b7"
         //            let url = "spotify:track:" + spotify.external_urls["Spotify"]
+        
         let trackName = ["uris": ["spotify:track:" + spotify.id]]
+        stopApplePlayback()
         SpotifyAPICaller.shared.startPlayback(with: trackName) { response in
             DispatchQueue.main.async {
                 switch response {
@@ -60,21 +61,36 @@ class PlayerVC: UIViewController {
                     print(r)
                     print("SUCCESS")
                 default:
-                    self.spotifyErrorPopup()
+//                    self.spotifyErrorPopup()
+                    print("broken")
+                }
+            }
+        }
+    }
+    
+    func resumePlayback() {
+        SpotifyAPICaller.shared.resumePlayback() { response in
+            DispatchQueue.main.async {
+                switch response {
+                case .success(let r):
+                    print(r)
+                    print("SUCCESS")
+                default:
+                    print("ERROR")
                 }
             }
         }
     }
     
     func spotifyErrorPopup() {
-            let title = "Error"
-            let alert = UIAlertController(title: title, message: "Please Reopen Spotify App On Your Device", preferredStyle: UIAlertController.Style.alert)
+        let title = "Error"
+        let alert = UIAlertController(title: title, message: "Please Reopen Musig After Spotify Launches", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.cancel, handler: { action in
-            self.navigationController?.setNavigationBarHidden(false, animated: false)
-            self.navigationController?.popViewControllerFromBottom(controller: PlayerVC())
+            // call SPOTIFYAPICALLER getDeviceIDs()
+            UIApplication.shared.open(URL(string: "spotify:home")!, options: [:], completionHandler: nil)
         }))
-            self.present(alert, animated: true, completion: nil)
-        }
+        present(alert, animated: true, completion: nil)
+    }
 //        print("BIG BOOTY")
 //        print(spotifyHTTPError.spotifyHTTPResponse)
 //        if spotifyHTTPError.spotifyHTTPResponse != 204 {
@@ -125,6 +141,11 @@ class PlayerVC: UIViewController {
         }
     }
     
+    func stopApplePlayback() {
+        applePlayer.pause()
+        togglePlayback = 0
+    }
+    
     // begin playing apple music song
     func beginPlaying() {
         Task {
@@ -166,19 +187,40 @@ class PlayerVC: UIViewController {
             togglePlayback = 1
             
             // apple
-            beginPlaying()
+            // beginPlaying()
             
             // spotify
+            SpotifyAPICaller.shared.resumePlayback() { response in
+                DispatchQueue.main.async {
+                    switch response {
+                    case .success(let r):
+                        print(r)
+                        print("SUCCESS")
+                    default:
+                        print("failure")
+                    }
+                }
+            }
             
         case 1:
             view.backgroundColor = .yellow
             togglePlayback = 0
             
             // apple
-            applePlayer.pause()
+//            applePlayer.pause()
             
             // spotify
-            
+            SpotifyAPICaller.shared.pausePlayback() { response in
+                DispatchQueue.main.async {
+                    switch response {
+                    case .success(let r):
+                        print(r)
+                        print("SUCCESS")
+                    default:
+                        print("failure")
+                    }
+                }
+            }
         default:
             print("error with playback")
         }

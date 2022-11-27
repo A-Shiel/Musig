@@ -391,6 +391,7 @@
 				DEVELOPMENT_TEAM = SG9Z94P6CY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Musig/Resources/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app requires Apple Music to access the Apple Music Library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -418,6 +419,7 @@
 				DEVELOPMENT_TEAM = SG9Z94P6CY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Musig/Resources/Info.plist;
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "This app requires Apple Music to access the Apple Music Library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

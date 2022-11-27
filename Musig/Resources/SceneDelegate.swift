@@ -12,5 +12,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         self.window = window
     }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        if SpotifyAuthManager.shared.isSignedIn {
+            SpotifyAuthVC.shared.startWebPlayer()
+        }
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let firstUrl = URLContexts.first?.url else {
+            return
+        }
+
+        print(firstUrl.absoluteString)
+    }
 }
 

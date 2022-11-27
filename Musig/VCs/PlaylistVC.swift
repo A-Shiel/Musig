@@ -95,20 +95,32 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
         switch result {
             
         case .spotify(let model):
-//            PlayerPresenter.startPlayback(from: self, spotify: spotify)
-//            navigationController?.show(vc, sender: spotify)
+            //            PlayerPresenter.startPlayback(from: self, spotify: spotify)
+            //            navigationController?.show(vc, sender: spotify)
             navigationController?.pushViewControllerFromTop(controller: vc)
             navigationController?.setNavigationBarHidden(true, animated: false)
+            
+            vc.stopApplePlayback()
             vc.startPlayback(spotify: model)
             
         case .apple(let model):
-//            PlayerPresenter.startPlayback(from: self, apple: apple)
-//            navigationController?.show(vc, sender: apple)
-//            navigationController?.pushViewController(vc, animated: true)
+            //            PlayerPresenter.startPlayback(from: self, apple: apple)
+            //            navigationController?.show(vc, sender: apple)
+            //            navigationController?.pushViewController(vc, animated: true)
             navigationController?.pushViewControllerFromTop(controller: vc)
             navigationController?.setNavigationBarHidden(true, animated: false)
-            vc.startPlayback(apple: model)
+            SpotifyAPICaller.shared.pausePlayback() { response in
+                DispatchQueue.main.async {
+                    switch response {
+                    case .success(let r):
+                        vc.startPlayback(apple: model)
+                        print(r)
+                        print("SUCCESS")
+                    default:
+                        print("ERROR 101")
+                    }
+                }
+            }
         }
-
     }
 }
