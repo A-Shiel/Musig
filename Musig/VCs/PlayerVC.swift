@@ -50,21 +50,21 @@ class PlayerVC: UIViewController {
     static let shared = PlayerVC()
     
     // VARIABLES
-    var playerIsPlaying = false
+    var playerIsPlaying = true
     let array = PlaylistArray.array
     var currentIndex = 0
     var initialIndex = 0
+    // on an apple object
     var appleToggle = false
+    // on a spotify object
     var spotifyToggle = false
     var duration = 0
-    var currentObj = [SearchResult]()
     
     
     // APPLE SPECIFIC
     private let applePlayer = ApplicationMusicPlayer.shared
     private var playerState = ApplicationMusicPlayer.shared.state
     private var isPlayBackQueueSet = false
-    
     
     
     override func viewDidLoad() {
@@ -126,16 +126,28 @@ class PlayerVC: UIViewController {
     func jumpOffPlayer() {
         currentIndex = initialIndex
         checkIfSpotifyOrApple()
-        playerPlay()
         playerIsPlaying = true
     }
    
     // play, pause
     @objc func handleTaps(_ sender: UITapGestureRecognizer) {
+        
+        print("handleTaps \(playerIsPlaying)")
+
         if playerIsPlaying == false {
-            playerPlay()
-        } else if playerIsPlaying == true {
+            
+            playerResume()
+            playerIsPlaying = true
+            print("playerResume")
+
+        }
+        
+        else if playerIsPlaying == true {
+            
             playerPause()
+            playerIsPlaying = false
+            print("playerPause")
+           
         }
     }
     
@@ -162,42 +174,72 @@ class PlayerVC: UIViewController {
         // IF SPOTIFY PLAY SPOTIFY
     }
     
-    func playerPlay() {
-        // IF APPLE -> PLAY APPLE PAUSE SPOTIFY
+    func playerPause() {
+        
+        print("playerPause \(appleToggle)")
+        print("playerPause \(spotifyToggle)")
 
         
-        // IF SPOTIFY -> PLAY SPOTIFY PAUSE APPLE
-  
-    }
-    
-    func playerPause() {
+        
         // IF APPLE -> PAUSE APPLE
+        if appleToggle == true {
+            applePause()
+        }
         
         // IF SPOTIFY -> PAUSE SPOTIFY
+        else if spotifyToggle == true {
+            spotifyPause()
+        }
+    }
+    
+    func playerResume() {
+        
+        print("playerResume \(appleToggle)")
+        print("playerResume \(spotifyToggle)")
+        
+        if appleToggle == true {
+            playerIsPlaying = true
+            appleResume()
+        }
+        else if spotifyToggle == true {
+            playerIsPlaying = true
+            spotifyResume()
+        }
+    }
+    
+    func checkIfSpotifyOrApple() {
+        print("checkifspotifyorapple \(playerIsPlaying)")
+        let result = array[currentIndex]
+        
+        switch result {
+        case .spotify(let model):
+            print("case spotify")
+            spotifyToggle = true
+            appleToggle = false
+            spotifyPlay(spotify: model)
+            print(spotifyToggle)
+            print(appleToggle)
+            print("****")
+
+
+            
+        case .apple(let model):
+            print("case apple")
+            appleToggle = true
+            spotifyToggle = false
+            applePlay(apple: model)
+            print(spotifyToggle)
+            print(appleToggle)
+            print("****")
+
+        }
     }
 }
 
 // apple and spotify specific methods
 extension PlayerVC {
     
-    func checkIfSpotifyOrApple() {
-        let result = array[currentIndex]
-        
-        switch result {
-        case .spotify(let model):
-            spotifyPlay(spotify: model)
-            spotifyToggle = true
-            appleToggle = false
-            playerPlay()
-            
-        case .apple(let model):
-            applePlay(apple: model)
-            spotifyToggle = false
-            appleToggle = true
-            playerPlay()
-        }
-    }
-    
+
     func spotifyPlay(spotify: AudioTrack) {
         let song = ["uris": ["spotify:track:" + spotify.id]]
         SpotifyAPICaller.shared.startPlayback(with: song) { response in
@@ -228,13 +270,46 @@ extension PlayerVC {
     }
     
     func spotifyPause() {
-        
+        SpotifyAPICaller.shared.pausePlayback() { response in
+            DispatchQueue.main.async {
+                switch response {
+                case .success(let r):
+                    print("spotifyPause passed")
+                default:
+                    print("spotifyPause failed")
+                }
+            }
+        }
     }
     
     func applePause() {
-        
+        applePlayer.pause()
     }
     
+    func spotifyResume() {
+        SpotifyAPICaller.shared.resumePlayback() { response in
+            DispatchQueue.main.async {
+                switch response {
+                case .success(let r):
+                    print("spotifyResume passed")
+                default:
+                    print("spotifyResume failed")
+                }
+            }
+        }
+    }
+    
+    func appleResume() {
+        isPlayBackQueueSet = true
+        Task {
+            do {
+                try await applePlayer.play()
+                print("applePlay passed")
+            } catch {
+                print("applePlay failed")
+            }
+        }
+    }
 }
 
 // timer
