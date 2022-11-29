@@ -76,6 +76,7 @@ extension LoginVC: LoginCellDelegate {
                 vc.completionHandler = { [weak self] success in
                     DispatchQueue.main.async {
                         self?.handleSignIn(success: success)
+                        self?.navigationController?.popViewController(animated: true)
                     }
                 }
                 vc.hidesBottomBarWhenPushed = true

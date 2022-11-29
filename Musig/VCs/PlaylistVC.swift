@@ -86,42 +86,58 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let result = PlaylistArray.array[indexPath.row]
-        
         let vc = PlayerVC()
         
         vc.hidesBottomBarWhenPushed = true
-        
-        switch result {
-            
-        case .spotify(let model):
-            //            PlayerPresenter.startPlayback(from: self, spotify: spotify)
-            //            navigationController?.show(vc, sender: spotify)
-            navigationController?.pushViewControllerFromTop(controller: vc)
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            
-            vc.stopApplePlayback()
-            vc.startPlayback(spotify: model)
-            
-        case .apple(let model):
-            //            PlayerPresenter.startPlayback(from: self, apple: apple)
-            //            navigationController?.show(vc, sender: apple)
-            //            navigationController?.pushViewController(vc, animated: true)
-            navigationController?.pushViewControllerFromTop(controller: vc)
-            navigationController?.setNavigationBarHidden(true, animated: false)
-            vc.startPlayback(apple: model)
-            SpotifyAPICaller.shared.pausePlayback() { response in
-                DispatchQueue.main.async {
-                    switch response {
-                    case .success(let r):
-                        vc.startPlayback(apple: model)
-                        print(r)
-                        print("SUCCESS")
-                    default:
-                        print("ERROR 101")
-                    }
-                }
-            }
-        }
+        PlayerVC.shared.initialIndex = indexPath.row
+        PlayerVC.shared.jumpOffPlayer()
+        navigationController?.pushViewControllerFromTop(controller: vc)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
     }
+    
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//
+//        let result = PlaylistArray.array[indexPath.row]
+//
+//        let vc = PlayerVC()
+//
+//        vc.hidesBottomBarWhenPushed = true
+//
+//        switch result {
+//
+//        // IF SPOTIFY SONG
+//
+//        case .spotify(let model):
+//            //            PlayerPresenter.startPlayback(from: self, spotify: spotify)
+//            //            navigationController?.show(vc, sender: spotify)
+//            navigationController?.pushViewControllerFromTop(controller: vc)
+//            navigationController?.setNavigationBarHidden(true, animated: false)
+////            vc.stopApplePlayback()
+//            vc.stopApplePlayback()
+//            vc.startPlayback(spotify: model)
+//
+//        // IF APPLE SONG
+//
+//        case .apple(let model):
+//            //            PlayerPresenter.startPlayback(from: self, apple: apple)
+//            //            navigationController?.show(vc, sender: apple)
+//            //            navigationController?.pushViewController(vc, animated: true)
+//            navigationController?.pushViewControllerFromTop(controller: vc)
+//            navigationController?.setNavigationBarHidden(true, animated: false)
+//            vc.startPlayback(apple: model)
+//            SpotifyAPICaller.shared.pausePlayback() { response in
+//                DispatchQueue.main.async {
+//                    switch response {
+//                    case .success(let r):
+//                        vc.startPlayback(apple: model)
+//                        print(r)
+//                        print("SUCCESS")
+//                    default:
+//                        print("ERROR 101")
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

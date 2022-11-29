@@ -2,68 +2,84 @@ import UIKit
 import MusicKit; import MediaPlayer
 import AVKit; import AVFoundation
 
+/*
+ LOGIC
+ 
+ check if apple song or spotify song
+ if apple song
+ set timer to apple (duration)
+ if spotify song
+ set timer to spotify (duration)
+ play()
+ 
+ if toggleplayback = 1 initiate timer
+ if toggleplayback = 0 stop timer
+ 
+ if apple song is playing and timer = 0
+ skip to next track in array
+ 
+ if spotify song is playing and timer = 0
+ skip to next track in array
+ 
+ VARIABLES
+ playerIsPlaying
+ currentIndexOfArray
+ songTimer
+ 
+ METHODS
+ 
+ - start spotify song
+ - start apple song
+ 
+ - resume spotify song
+ - resume apple song
+ 
+ - pause spotify song
+ - pause apple song
+ 
+ - skip to next track
+ - go back to previous track
+ 
+ - close the player
+ 
+ */
+
+// GESTURES
 class PlayerVC: UIViewController {
     
-    lazy var musicTitle: UILabel = {
-        let label = UILabel()
-//        label.text = "This is label view."
-        label.font = UIFont.systemFont(ofSize: 50)
-        label.lineBreakMode = .byWordWrapping
-        label.adjustsFontSizeToFitWidth = true
-        label.numberOfLines = 3
-        label.textAlignment = .center
-        return label
-    }()
+    static let shared = PlayerVC()
     
-    lazy var artistTitle: UILabel = {
-        let label = UILabel()
-//        label.text = "This is label view."
-        label.font = UIFont.systemFont(ofSize: 40)
-        label.lineBreakMode = .byWordWrapping
-        label.adjustsFontSizeToFitWidth = true
-        label.numberOfLines = 3
-        label.textAlignment = .center
-        return label
-    }()
+    // VARIABLES
+    var playerIsPlaying = false
+    let array = PlaylistArray.array
+    var currentIndex = 0
+    var initialIndex = 0
+    var appleToggle = false
+    var spotifyToggle = false
+    var duration = 0
+    var currentObj = [SearchResult]()
     
-    func musicTitleConstraints() {
-        musicTitle.translatesAutoresizingMaskIntoConstraints = false
-        musicTitle.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        musicTitle.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-        musicTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        musicTitle.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: -100).isActive = true
-        
-    }
     
-    func artistTitleConstraints() {
-        artistTitle.translatesAutoresizingMaskIntoConstraints = false
-        artistTitle.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        artistTitle.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-        artistTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        artistTitle.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 50).isActive = true
-    }
-    
-    // general
-    var togglePlayback = 0
-
-    // spotify
-    var spotifyPlayer: AVPlayer?
-    var pleyerItem: AVPlayerItem?
-    
-    // apple
+    // APPLE SPECIFIC
     private let applePlayer = ApplicationMusicPlayer.shared
     private var playerState = ApplicationMusicPlayer.shared.state
     private var isPlayBackQueueSet = false
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        view.addSubview(musicTitle)
-//        view.addSubview(artistTitle)
-//
-//        musicTitleConstraints()
-//        artistTitleConstraints()
-        
+        view.backgroundColor = .systemBackground
+        setupGestures()
+    }
+
+    // runs every time the player shows on screen
+    override func viewWillAppear(_ animated: Bool) {
+        print("Moved To -> Player")
+    }
+    
+    // initializes the gestures
+    func setupGestures() {
         let swipeDownFromTop = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipes(_:)))
         swipeDownFromTop.direction = .down
         view.addGestureRecognizer(swipeDownFromTop)
@@ -78,181 +94,163 @@ class PlayerVC: UIViewController {
         
         let screenTapped = UITapGestureRecognizer(target: self, action: #selector(handleTaps(_:)))
         view.addGestureRecognizer(screenTapped)
-       
-        view.backgroundColor = .systemBackground
     }
-   
-    // exit forwards backwards
+    
+    // skip, back, or exit
     @objc func handleSwipes(_ sender: UISwipeGestureRecognizer) {
         
-        let vc = PlayerVC()
-       
         // exit
         if sender.direction == .down {
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            navigationController?.popViewControllerFromBottom(controller: vc)
+            exitGesture()
         }
         
-        // skip forward
+        // skip
         if sender.direction == .left {
-            view.backgroundColor = .systemBlue
+            skipGesture()
         }
         
-        // skip backward
+        // back
         if sender.direction == .right {
-            view.backgroundColor = .systemRed
+            backGesture()
         }
     }
     
-    // play and pause
-    @objc func handleTaps(_ sender: UITapGestureRecognizer) {
+    
+    
+    
+    
+  // REAL CODE BELOW
+    
 
-        switch togglePlayback {
-        
-        // player is paused
-        case 0:
-            view.backgroundColor = .blue
-            togglePlayback = 1
-            
-            // apple
-            // begin playing
-            beginPlaying()
-            
-            // spotify
-            // begin playing
-            SpotifyAPICaller.shared.resumePlayback() { response in
-                DispatchQueue.main.async {
-                    switch response {
-                    case .success(let r):
-                        print(r)
-                        print("SUCCESS")
-                    default:
-                        print("failure")
-                    }
-                }
-            }
-        
-        // player is playing
-        case 1:
-            // apple
-            // stop playing
-            stopApplePlayback()
-            
-            
-            // spotify
-            // stop playing
-            
-            view.backgroundColor = .yellow
-            togglePlayback = 0
-        default:
-            print("error with playback")
+    // PlaylistVC call
+    func jumpOffPlayer() {
+        currentIndex = initialIndex
+        checkIfSpotifyOrApple()
+        playerPlay()
+        playerIsPlaying = true
+    }
+   
+    // play, pause
+    @objc func handleTaps(_ sender: UITapGestureRecognizer) {
+        if playerIsPlaying == false {
+            playerPlay()
+        } else if playerIsPlaying == true {
+            playerPause()
         }
+    }
+    
+    func exitGesture() {
+       // CLOSE PLAYER
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        navigationController?.popViewControllerFromBottom(controller: self)
+    }
+   
+    func skipGesture() {
+        // CHECK APPLE OR SPOTIFY
+        
+        // IF APPLE PLAY APPLE
+        
+        // IF SPOTIFY PLAY SPOTIFY
+    }
+    
+    func backGesture() {
+        // CHECK APPLE OR SPOTIFY
+        
+        // IF APPLE PLAY APPLE
+        
+        
+        // IF SPOTIFY PLAY SPOTIFY
+    }
+    
+    func playerPlay() {
+        // IF APPLE -> PLAY APPLE PAUSE SPOTIFY
+
+        
+        // IF SPOTIFY -> PLAY SPOTIFY PAUSE APPLE
+  
+    }
+    
+    func playerPause() {
+        // IF APPLE -> PAUSE APPLE
+        
+        // IF SPOTIFY -> PAUSE SPOTIFY
     }
 }
 
-
+// apple and spotify specific methods
 extension PlayerVC {
     
-    // start playback for spotify
-    // FROM PLAYLISTVC
-    func startPlayback(spotify: AudioTrack) {
+    func checkIfSpotifyOrApple() {
+        let result = array[currentIndex]
         
-        musicTitle.text = spotify.name
-        self.view.addSubview(musicTitle)
-        musicTitleConstraints()
-        artistTitle.text = spotify.artists[0].name
-        self.view.addSubview(artistTitle)
-        artistTitleConstraints()
-        
-        
-        let trackName = ["uris": ["spotify:track:" + spotify.id]]
-        stopApplePlayback()
-        SpotifyAPICaller.shared.startPlayback(with: trackName) { response in
+        switch result {
+        case .spotify(let model):
+            spotifyPlay(spotify: model)
+            spotifyToggle = true
+            appleToggle = false
+            playerPlay()
+            
+        case .apple(let model):
+            applePlay(apple: model)
+            spotifyToggle = false
+            appleToggle = true
+            playerPlay()
+        }
+    }
+    
+    func spotifyPlay(spotify: AudioTrack) {
+        let song = ["uris": ["spotify:track:" + spotify.id]]
+        SpotifyAPICaller.shared.startPlayback(with: song) { response in
             DispatchQueue.main.async {
                 switch response {
                 case .success(let r):
-                    print(r)
-                    print("SUCCESS")
+                    print("spotifyPlay passed")
                 default:
-                    print("broken")
+                    print("spotifyPlay failed")
                 }
             }
         }
     }
     
-    // resume playback for spotify
-    func resumePlayback() {
-        SpotifyAPICaller.shared.resumePlayback() { response in
-            DispatchQueue.main.async {
-                switch response {
-                case .success(let r):
-                    print(r)
-                    print("SUCCESS")
-                default:
-                    print("ERROR")
+    func applePlay(apple: Song) {
+        if !isPlayBackQueueSet {
+            applePlayer.queue = [apple]
+            isPlayBackQueueSet = true
+            Task {
+                do {
+                    try await applePlayer.play()
+                    print("applePlay passed")
+                } catch {
+                    print("applePlay failed")
                 }
             }
         }
     }
     
-    // change methodology of spotifyerrorpopup
-    func spotifyErrorPopup() {
-        let title = "Error"
-        let alert = UIAlertController(title: title, message: "Please Reopen Musig After Spotify Launches", preferredStyle: UIAlertController.Style.alert)
-        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.cancel, handler: { action in
-            // call SPOTIFYAPICALLER getDeviceIDs()
-            UIApplication.shared.open(URL(string: "spotify:home")!, options: [:], completionHandler: nil)
-        }))
-        present(alert, animated: true, completion: nil)
+    func spotifyPause() {
+        
     }
     
-    // apple playback
-    // FROM PLAYLISTVC
-    // rework
-    func startPlayback(apple: Song) {
+    func applePause() {
+        
+    }
+    
+}
 
-        musicTitle.text = apple.title
-        self.view.addSubview(musicTitle)
-        musicTitleConstraints()
-        artistTitle.text = apple.artistName
-        self.view.addSubview(artistTitle)
-        artistTitleConstraints()
-        
-        if togglePlayback == 0 {
-            if !isPlayBackQueueSet {
-                applePlayer.queue = [apple]
-                isPlayBackQueueSet = true
-                beginPlaying()
-                togglePlayback = 1
-            } else {
-                beginPlaying()
-                togglePlayback = 1
-            }
-            } else {
-            applePlayer.pause()
-            togglePlayback = 0
-        }
-    }
-    
-    // apple stop playback
-    func stopApplePlayback() {
-        applePlayer.pause()
-        togglePlayback = 0
-    }
-    
-    // apple play playback
-    func beginPlaying() {
-        Task {
-            do {
-                try await applePlayer.play()
-            } catch {
-                print("\(error)")
-            }
-        }
+// timer
+extension PlayerVC {
+    func durationFinished() {
+        // if there is a next track
+        // if currentIndex += 1 < array.count
+        // currentIndex += 1
+        // set track to next track
+        // skipGesture()
+        //
     }
 }
 
 extension UINavigationController {
+    
     func pushViewControllerFromTop(controller: UIViewController) {
         let transition = CATransition()
         transition.duration = 0.25

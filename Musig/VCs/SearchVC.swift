@@ -52,7 +52,6 @@ class SearchVC: UIViewController, UISearchBarDelegate {
                     }
                 }
             }
-            
             await AMCaller.shared.search(with: query) { result in
                 DispatchQueue.main.async {
                     switch result {

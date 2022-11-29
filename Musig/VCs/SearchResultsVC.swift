@@ -57,10 +57,16 @@ class SearchResultsVC: UIViewController {
             }
         })
         
-        self.sections = [
-            SearchSection(title: "Spotify", results: tracks),
-            SearchSection(title: "Apple Music", results: songs)
-        ]
+//        let spotifySection = SearchSection(title: "Spotify", results: tracks)
+//
+//        if SearchVC.shared.appleMusicCanSearch {
+//            let appleMusicSection = SearchSection(title: "Apple Music", results: songs)
+//            self.sections = [spotifySection, appleMusicSection]
+//        } else {
+//            self.sections = [spotifySection]
+//        }
+        
+        self.sections = [SearchSection(title: "Spotify", results: tracks), SearchSection(title: "Apple Music", results: songs)]
         
         myTableView.reloadData()
         myTableView.isHidden = results.isEmpty
