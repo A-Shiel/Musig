@@ -1,6 +1,9 @@
 import UIKit
+import SafariServices
 
-class TabBarVC: UITabBarController {
+class TabBarVC: UITabBarController, SFSafariViewControllerDelegate {
+    
+    static let shared = TabBarVC()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,5 +42,13 @@ class TabBarVC: UITabBarController {
 
         return UINavigationController(rootViewController: lv)
     }
-       
+    
+//    func loadSFVInBackground() {
+//        let safariVC = SFSafariViewController(url: NSURL(string: "https://open.spotify.com")! as URL)
+//        safariVC.delegate = self
+//
+//        DispatchQueue.main.async { [weak self] in
+//            self?.present(safariVC, animated: true, completion: nil)
+//        }
+//    }
 }

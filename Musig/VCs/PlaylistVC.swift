@@ -109,6 +109,7 @@ extension PlaylistVC: UITableViewDelegate, UITableViewDataSource {
             //            navigationController?.pushViewController(vc, animated: true)
             navigationController?.pushViewControllerFromTop(controller: vc)
             navigationController?.setNavigationBarHidden(true, animated: false)
+            vc.startPlayback(apple: model)
             SpotifyAPICaller.shared.pausePlayback() { response in
                 DispatchQueue.main.async {
                     switch response {

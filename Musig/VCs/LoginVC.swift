@@ -1,16 +1,22 @@
 import UIKit
 import MusicKit
 import SafariServices
+import WebKit
+import AVFoundation
 
 
-class LoginVC: UIViewController, SFSafariViewControllerDelegate {
+class LoginVC: UIViewController, SFSafariViewControllerDelegate, WKNavigationDelegate, WKUIDelegate {
+    
     
     var myTableView: UITableView!
     var list: [String] = ["Spotify", "Apple Music", "YouTube"]
     
+    var player: AVAudioPlayer?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+       
         myTableView = UITableView()
         configureMyTableView()
         view.addSubview(myTableView)
@@ -53,46 +59,53 @@ extension LoginVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
             return nil
     }
-
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if (indexPath.row == 0) {
-//            print("0")
-//        }
-//        if (indexPath.row == 1) {
-//            print("1")
-//        }
-//        if (indexPath.row == 2) {
-//            print("2")
-//        }
-//    }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return view.frame.height / 10
     }
 }
 
+
 extension LoginVC: LoginCellDelegate {
     func didTapButton(with title: String) {
         if title == "Spotify" {
-            let vc = SpotifyAuthVC()
-            vc.completionHandler = { [weak self] success in
-                DispatchQueue.main.async {
-                    self?.handleSignIn(success: success)
+            if SpotifyAuthManager.shared.isSignedIn {
+                print("USER IS SIGNED IN AND LOADING WEB PLAYER")
+                initiateWebPlayerInBackground()
+                SpotifyAuthVC.shared.getDeviceIDS()
+                // very temp
+                // 7xn7WXN302ayw4JPJWf5qZ
+//                let trackName = ["uris": ["spotify:track:7xn7WXN302ayw4JPJWf5qZ"]]
+//
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 20) {
+//                    SpotifyAPICaller.shared.startPlayback(with: trackName) { response in
+//                        DispatchQueue.main.async {
+//                            switch response {
+//                            case .success(let r):
+//                                print(r)
+//                                print("SUCCESS")
+//                            default:
+//                                print("broken")
+//                            }
+//                        }
+//                    }
+//                }
+                // very temp end
+            } else {
+                let vc = SpotifyAuthVC()
+                vc.completionHandler = { [weak self] success in
+                    DispatchQueue.main.async {
+                        self?.handleSignIn(success: success)
+                    }
                 }
+                vc.hidesBottomBarWhenPushed = true
+                navigationController?.pushViewController(vc, animated: true)
             }
-            vc.hidesBottomBarWhenPushed = true
-            navigationController?.pushViewController(vc, animated: true)
-//            spotifyAlertReturn()
-
-            // call method to loop through device list and grab name key from device
-            // if device.name == "iPhone"
-            // grab the associated value with the key device.ID
-            // store value into a variable
         }
         
         if title == "Apple Music" {
             Task {
-             let status = await MusicAuthorization.request()
+                let status = await MusicAuthorization.request()
                 switch status {
                 case .authorized:
                     print("authorized")
@@ -113,6 +126,24 @@ extension LoginVC: LoginCellDelegate {
         }
     }
     
+    
+    func initiateWebPlayerInBackground() {
+        let svc = SFSafariViewController(url: NSURL(string: "https://open.spotify.com")! as URL)
+        svc.playAudio()
+        var safariView:UIView?
+        let containerView = UIView()
+        self.addChild(svc)
+        svc.didMove(toParent: self)
+        svc.view.frame = view.frame
+        containerView.frame = view.frame
+        safariView = svc.view
+        view.addSubview(safariView!)
+        view.addSubview(containerView)
+        view.bringSubviewToFront(safariView!)
+        //        view.sendSubviewToBack(safariView!)
+    }
+    
+
     func spotifyAlertReturn() {
         let title = "Spotify Auth"
         let alert = UIAlertController(title: title, message: "Please Reopen Musig After Spotify Launches", preferredStyle: UIAlertController.Style.alert)
@@ -135,10 +166,43 @@ extension LoginVC {
             present(alert, animated: true)
             return
         }
+    }
+}
+
+extension SFSafariViewController {
+   
+    func playAudio() {
         
-//        if success {
-//           linkDeviceIDS()
-//        }
+        var player: AVAudioPlayer?
+        
+        if let player = player, player.isPlaying {
+            player.stop()
+            print("player stopped")
+        }
+        
+        else {
+            let song = Bundle.main.path(forResource: "hello", ofType: "mp3")
+            
+            do {
+                guard let song = song else {
+                    return
+                }
+                
+                player = try AVAudioPlayer(contentsOf: URL(fileURLWithPath: song))
+                try AVAudioSession.sharedInstance().setMode(.default)
+                try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+                
+                guard let player = player else {
+                    return
+                }
+                
+                player.play()
+                print("player playing")
+                
+            } catch {
+                print("did not play")
+            }
+        }
     }
 }
 

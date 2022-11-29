@@ -1,4 +1,5 @@
 import UIKit
+import AVFAudio
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -15,7 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appLaunched()
         
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = TabBarVC()
+//        window.rootViewController = TabBarVC()
+        window.rootViewController = RootVC()
         self.window = window
         
         return true
@@ -43,12 +45,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 PlaylistArray.array = loadedPlaylist
             }
         }
+        
         if let savedDeviceKey = defaults.object(forKey: AppDelegate.deviceIdentifier) as? Data {
             let decoder = JSONDecoder()
             if let loadedDevice = try? decoder.decode(String.self, from: savedDeviceKey) {
                 DeviceKey.key = loadedDevice
             }
         }
+        
+//        let audioSession = AVAudioSession.sharedInstance()
+//         do {
+////            try audioSession.setCategory(.playback)
+//            try audioSession.setActive(true)
+//            print("audio initialized")
+//         } catch {
+//             print("Setting category to AVAudioSessionCategoryPlayback failed.")
+//         }
     }
 }
 

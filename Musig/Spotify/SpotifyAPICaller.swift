@@ -161,6 +161,7 @@ final class SpotifyAPICaller {
     public func resumePlayback(completion: @escaping (Result<Int, Error>) -> Void) {
         createRequest(
             with: URL(string: Constants.baseAPIURL+"/me/player/play?device_id=\(DeviceKey.key)"),
+//            with: URL(string: Constants.baseAPIURL+"/me/player/play"),
             type: .PUT
         ) { request in
             print(request.url?.absoluteString ?? "none")
@@ -174,7 +175,6 @@ final class SpotifyAPICaller {
                     // cast reponse to int
                     // store it
                     let responseHTML = response.statusCode
-                    print(responseHTML)
                     
                     if responseHTML == 204 {
                         completion(.success(responseHTML))

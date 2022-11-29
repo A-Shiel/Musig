@@ -9,6 +9,8 @@ struct DeviceKey: Codable {
 class SpotifyAuthVC: UIViewController, WKNavigationDelegate, SFSafariViewControllerDelegate {
     
     static let shared = SpotifyAuthVC()
+    
+    var timer = Timer()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,9 +45,14 @@ class SpotifyAuthVC: UIViewController, WKNavigationDelegate, SFSafariViewControl
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
         webView.frame = view.bounds
     }
+    
+//    func initiateSafariVC() {
+//        let safariVC = SFSafariViewController(url: NSURL(string: "https://open.spotify.com")! as URL)
+//        safariVC.delegate = self
+//        self.present(safariVC, animated: true)
+//    }
     
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         guard let url = webView.url else {
@@ -57,86 +64,74 @@ class SpotifyAuthVC: UIViewController, WKNavigationDelegate, SFSafariViewControl
         }
         
         webView.isHidden = false
-//        webView.load(URLRequest(url: URL(string: "https://www.google.com")!))
-        
-        let urlString = "https://www.spotify.com"
-       
-        if let url = URL(string: urlString) {
-            let vc = SFSafariViewController(url: url, entersReaderIfAvailable: true)
-            vc.delegate = self
-            present(vc, animated: true)
-        }
-
-//        self.navigationController?.setNavigationBarHidden(true, animated: false)
-//        self.navigationController?.pushViewController(TabBarVC(), animated: true)
-        
-//        self.navigationController?.setNavigationBarHidden(true, animated: false)
-//        self.navigationController?.pushViewController(TabBarVC(), animated: true)
-//        self.navigationController?.modalPresentationStyle = .overCurrentContext
-        let root = TabBarVC()
-        root.modalPresentationStyle = .overFullScreen
-        present(root, animated: true)
-//        self.navigationController?.pushViewController(root, animated: true)
-        
         
         SpotifyAuthManager.shared.exchangeCodeForToken(code: code) { [weak self] success in
             DispatchQueue.main.async {
-//                self?.navigationController?.popToRootViewController(animated: true)
-//                self?.present(TabBarVC(), animated: true)
-//                TabBarVC().navigationController?.pushViewController(TabBarVC(), animated: true)
-//                self?.navigationController?.setNavigationBarHidden(true, animated: false)
-//                self?.navigationController?.pushViewController(TabBarVC(), animated: true)
                 self?.completionHandler?(success)
             }
         }
     }
+   
+//    user dismiss
+//    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+//        dismiss(animated: true)
+//
+//        print("safari view controller did finish loaded")
+//        startWebPlayer()
+//    }
     
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        dismiss(animated: true)
-        
-        print("safari view controller did finish")
+//    public func startWebPlayer() {
+//
+//      timer = Timer.scheduledTimer(timeInterval: 20.0, target: self, selector: #selector(timerAction), userInfo: nil, repeats: true)
 //        self.navigationController?.popToRootViewController(animated: true)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        let root = TabBarVC()
-        root.modalPresentationStyle = .overFullScreen
-        present(root, animated: true)
-//        self.navigationController?pushViewController(TabBarVC(), animated: true)
-//        TabBarVC().modalPresentationStyle = .overFullScreen
-//        self.present(TabBarVC(), animated: true, completion: nil)
-        startWebPlayer()
-    }
-    
-    public func startWebPlayer() {
-        
-//        print(self.navigationController?.viewControllers)
-        
-        let urlString = "https://open.spotify.com"
-      
-        if let url = URL(string: urlString) {
-            let vc = SFSafariViewController(url: url, entersReaderIfAvailable: true)
-            vc.delegate = self
-//            present(vc, animated: true)
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        TabBarVC().modalPresentationStyle = .pageSheet
-        self.present(TabBarVC(), animated: true, completion: nil)
+//        self.navigationController?.popToRootViewController(animated: true)
 //        self.navigationController?.pushViewController(TabBarVC(), animated: true)
-//        self.navigationController?.popViewController(animated: true)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//        print(navigationController?.viewControllers)
+//        RootVC.shared.initiateSafariVC()
+//        let safariVC = SFSafariViewController(url: NSURL(string: "https://open.spotify.com")! as URL)
+//        safariVC.delegate = self
+//        TabBarVC().present(safariVC, animated: true)
+//
+//
+//        self.navigationController?.popToRootViewController(animated: true)
+//        let safariVC = SFSafariViewController(url: NSURL(string: "https://open.spotify.com")! as URL)
+//        self.present(safariVC, animated: true)
+//        safariVC.view.isHidden = false
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+//            SpotifyAPICaller.shared.getDeviceIDS() { response in
+//                DispatchQueue.main.async {
+//                   switch response {
+//                    case .success(let model):
+//                        for i in model {
+//                            guard case .spotify(let m) = i
+//                            else { return }
+//                            if m.name == "Mobile Web Player" {
+//                                DeviceKey.key = m.id
+//                                print("LINKDEVICEIDS")
+//                                print(DeviceKey.key)
+//                            }
+//                        }
+//                    default:
+//                        print("error")
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
+    func getDeviceIDS() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
             SpotifyAPICaller.shared.getDeviceIDS() { response in
                 DispatchQueue.main.async {
-                    switch response {
+                   switch response {
                     case .success(let model):
                         for i in model {
                             guard case .spotify(let m) = i
                             else { return }
                             if m.name == "Mobile Web Player" {
                                 DeviceKey.key = m.id
-                                print("LINKDEVICEIDS")
-                                print(DeviceKey.key)
+                                print("DEVICE KEY SUCCESSFULLY RETURNED = \(DeviceKey.key)")
                             }
                         }
                     default:
@@ -147,24 +142,30 @@ class SpotifyAuthVC: UIViewController, WKNavigationDelegate, SFSafariViewControl
         }
     }
     
-    public func linkDeviceIDS() {
-        SpotifyAPICaller.shared.getDeviceIDS() { response in
-            DispatchQueue.main.async {
-                switch response {
-                case .success(let model):
-                    for i in model {
-                        guard case .spotify(let m) = i
-                        else { return }
-                        if m.name == "Mobile Web Player" {
-                            DeviceKey.key = m.id
-                            print("LINKDEVICEIDS")
-                            print(DeviceKey.key)
-                        }
-                    }
-                default:
-                    print("error")
-                }
-            }
-        }
-    }
+//    @objc func timerAction() {
+//        let root = RootVC()
+//        root.modalPresentationStyle = .overFullScreen
+//        self.present(root, animated: true)
+//    }
+//
+//    public func linkDeviceIDS() {
+//        SpotifyAPICaller.shared.getDeviceIDS() { response in
+//            DispatchQueue.main.async {
+//                switch response {
+//                case .success(let model):
+//                    for i in model {
+//                        guard case .spotify(let m) = i
+//                        else { return }
+//                        if m.name == "Mobile Web Player" {
+//                            DeviceKey.key = m.id
+//                            print("LINKDEVICEIDS")
+//                            print(DeviceKey.key)
+//                        }
+//                    }
+//                default:
+//                    print("error")
+//                }
+//            }
+//        }
+//    }
 }

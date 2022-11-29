@@ -8,14 +8,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = TabBarVC()
+//        window.rootViewController = TabBarVC()
+        window.rootViewController = RootVC()
         window.makeKeyAndVisible()
         self.window = window
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         if SpotifyAuthManager.shared.isSignedIn {
-            SpotifyAuthVC.shared.startWebPlayer()
+            print("USER IS SIGNED IN TO SPOTIFY")
+//            SpotifyAuthVC.shared.startWebPlayer()
         }
     }
     
@@ -27,4 +29,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print(firstUrl.absoluteString)
     }
 }
+
+//extension SceneDelegate {
+//    static var shared: SceneDelegate {
+//        return UIApplication.shared.delegate as! SceneDelegate
+//    }
+//    var rootViewController: RootViewController {
+//        return window!.rootViewController as! RootViewController
+//    }
+//}
 
