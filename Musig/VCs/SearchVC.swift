@@ -3,9 +3,13 @@ import MusicKit
 
 class SearchVC: UIViewController, UISearchBarDelegate {
     
+    static let shared = SearchVC()
+    
     var myTableView: UITableView!
     let searchController = UISearchController(searchResultsController: SearchResultsVC())
     var array: [SearchResult] = []
+    
+    var appleMusicCanSearch = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,27 +40,11 @@ class SearchVC: UIViewController, UISearchBarDelegate {
         
         self.array = []
         
-//        Task {
-//            SpotifyAPICaller.shared.getDeviceIDS(completion:) { result in
-//                DispatchQueue.main.async {
-//                    switch result {
-//                    case .success(let results):
-//                        self.deviceArray.append(contentsOf: results)
-//                        print("1111")
-//                        break
-//                    case .failure(let error):
-//                        print(error.localizedDescription)
-//                    }
-//                }
-//            }
-//        }
-//
         Task {
             SpotifyAPICaller.shared.search(with: query) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let results):
-                        //                    resultsController.update(with: results)
                         self.array.append(contentsOf: results)
                         break
                     case .failure(let error):
@@ -64,11 +52,11 @@ class SearchVC: UIViewController, UISearchBarDelegate {
                     }
                 }
             }
+            
             await AMCaller.shared.search(with: query) { result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let results):
-                        //                        resultsController.update(with: results)
                         self.array.append(contentsOf: results)
                         break
                     case .failure(let error):

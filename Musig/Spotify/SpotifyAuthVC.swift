@@ -120,23 +120,43 @@ class SpotifyAuthVC: UIViewController, WKNavigationDelegate, SFSafariViewControl
 //        }
 //    }
     
+//    func getDeviceIDS() {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            SpotifyAPICaller.shared.getDeviceIDS() { response in
+//                DispatchQueue.main.async {
+//                   switch response {
+//                    case .success(let model):
+//                        for i in model {
+//                            guard case .spotify(let m) = i
+//                            else { return }
+//                            if m.name == "Mobile Web Player" {
+//                                DeviceKey.key = m.id
+//                                print("DEVICE KEY SUCCESSFULLY RETURNED = \(DeviceKey.key)")
+//                            }
+//                        }
+//                    default:
+//                        print("error")
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
     func getDeviceIDS() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-            SpotifyAPICaller.shared.getDeviceIDS() { response in
-                DispatchQueue.main.async {
-                   switch response {
-                    case .success(let model):
-                        for i in model {
-                            guard case .spotify(let m) = i
-                            else { return }
-                            if m.name == "Mobile Web Player" {
-                                DeviceKey.key = m.id
-                                print("DEVICE KEY SUCCESSFULLY RETURNED = \(DeviceKey.key)")
-                            }
+        SpotifyAPICaller.shared.getDeviceIDS() { response in
+            DispatchQueue.main.async {
+                switch response {
+                case .success(let model):
+                    for i in model {
+                        guard case .spotify(let m) = i
+                        else { return }
+                        if m.name == "Mobile Web Player" {
+                            DeviceKey.key = m.id
+                            print("DEVICE KEY SUCCESSFULLY RETURNED = \(DeviceKey.key)")
                         }
-                    default:
-                        print("error")
                     }
+                default:
+                    print("error")
                 }
             }
         }

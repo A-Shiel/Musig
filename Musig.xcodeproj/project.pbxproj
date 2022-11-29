@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F6225B34293428EA008D9967 /* RootVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6225B33293428EA008D9967 /* RootVC.swift */; };
 		F6225B3A29356974008D9967 /* hello.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F6225B3929356974008D9967 /* hello.mp3 */; };
+		F6225B3C2935DB20008D9967 /* HostVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6225B3B2935DB20008D9967 /* HostVC.swift */; };
 		F65AA5B52922A0D000E120EE /* AMCaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65AA5B42922A0D000E120EE /* AMCaller.swift */; };
 		F687E5C42929B9AA00611327 /* PlayerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F687E5C32929B9AA00611327 /* PlayerVC.swift */; };
 		F69289F0291AF8F40027AA96 /* SpotifySearchResultsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69289EF291AF8F40027AA96 /* SpotifySearchResultsResponse.swift */; };
@@ -36,6 +37,7 @@
 /* Begin PBXFileReference section */
 		F6225B33293428EA008D9967 /* RootVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootVC.swift; sourceTree = "<group>"; };
 		F6225B3929356974008D9967 /* hello.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = hello.mp3; sourceTree = "<group>"; };
+		F6225B3B2935DB20008D9967 /* HostVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostVC.swift; sourceTree = "<group>"; };
 		F65AA5B42922A0D000E120EE /* AMCaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AMCaller.swift; sourceTree = "<group>"; };
 		F687E5C32929B9AA00611327 /* PlayerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerVC.swift; sourceTree = "<group>"; };
 		F69289EF291AF8F40027AA96 /* SpotifySearchResultsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySearchResultsResponse.swift; sourceTree = "<group>"; };
@@ -152,8 +154,9 @@
 				F696E9FE290EFB8C00D2C698 /* PlaylistVC.swift */,
 				F696EA00290EFB9600D2C698 /* SearchVC.swift */,
 				F69289FC291B049E0027AA96 /* SearchResultsVC.swift */,
-				F687E5C32929B9AA00611327 /* PlayerVC.swift */,
 				F6225B33293428EA008D9967 /* RootVC.swift */,
+				F6225B3B2935DB20008D9967 /* HostVC.swift */,
+				F687E5C32929B9AA00611327 /* PlayerVC.swift */,
 			);
 			path = VCs;
 			sourceTree = "<group>";
@@ -256,6 +259,7 @@
 				F696EA03290EFB9E00D2C698 /* LoginVC.swift in Sources */,
 				F6EE1E282919A5220038ECE6 /* SpotifyAuthVC.swift in Sources */,
 				F69289F4291AFA1A0027AA96 /* Artist.swift in Sources */,
+				F6225B3C2935DB20008D9967 /* HostVC.swift in Sources */,
 				F687E5C42929B9AA00611327 /* PlayerVC.swift in Sources */,
 				F6A37DC6292D121000B21372 /* DeviceResult.swift in Sources */,
 				F69289FB291AFC7C0027AA96 /* SearchResult.swift in Sources */,

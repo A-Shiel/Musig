@@ -42,7 +42,10 @@ class LoginCell: UITableViewCell {
     func configureBtn(with title: String) {
         self.title = title
         btn = UIButton()
-        btn.configuration = .tinted()
+//        btn.configuration = .filled()
+        btn.configuration = .filled()
+        btn.tintColor = .tertiarySystemBackground
+        btn.titleLabel?.font = .systemFont(ofSize: 40)
         btn.setTitle(title, for: .normal)
     }
 }
